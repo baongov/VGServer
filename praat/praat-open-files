@@ -1,0 +1,44 @@
+#!/usr/bin/python
+
+### Copyright (C) 2013  Rafael Laboissiere
+###
+### This program is free software; you can redistribute it and/or modify it
+### under the terms of the GNU General Public License as published by the
+### Free Software Foundation; either version 3 of the License, or (at your
+### option) any later version.
+###
+### This program is distributed in the hope that it will be useful, but
+### WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+### General Public License for more details.
+###
+### You should have received a copy of the GNU General Public License along
+### with this program; if not, see <http://www.gnu.org/licenses/>.
+
+import argparse
+import os
+import subprocess
+import time
+
+parser = argparse.ArgumentParser (description = 'Open sound files with Praat')
+parser.add_argument ('--new', action = 'store_true',
+                     help = 'Launch a new instance of praat for viewing the files')
+wait_default = 3
+parser.add_argument ('--wait', type = int, default = wait_default,
+                     help = 'time, in sec, to wait for the new instance of praat'
+                            + ' to be launched (default = %d)' % wait_default)
+parser.add_argument ('files', metavar = 'file', type = str, nargs = '+',
+                     help = 'sound file to be opened')
+
+args = parser.parse_args ()
+
+command = ['sendpraat', 'praat']
+for f in args.files:
+    command.append ('Read from file... %s' % os.path.abspath (f))
+    command.append ('Edit')
+
+if len (command) > 2:
+    if args.new:
+        subprocess.Popen (['praat'])
+        time.sleep (args.wait)
+    subprocess.Popen (command)
